@@ -26,4 +26,8 @@ public class Medico {
 
     @Column(name = "matricula", nullable = false)
     private String matricula;
+
+    @ManyToOne
+    @JoinColumn(name = "especialidad_id", nullable = false)
+    private Especialidad especialidad;
 }

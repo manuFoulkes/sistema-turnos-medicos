@@ -19,6 +19,6 @@ public class Especialidad {
     @Setter(AccessLevel.NONE)
     private Long id;
 
-    @Column(name = "nombre")
+    @Column(name = "nombre", nullable = false, unique = true)
     private String nombre;
 }
