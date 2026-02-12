@@ -31,7 +31,7 @@ public class EspecialidadService {
                 .orElseThrow(() -> new RuntimeException("Especialidad no encontrada"));
 
         especialidad.setNombre(nombre);
-        
+
         return especialidadRepository.save(especialidad);
     }
 }
