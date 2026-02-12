@@ -63,8 +63,34 @@ public class MedicoService {
         return medicoRepository.findAll();
     }
 
-    public Medico updateMedico(Long id, Medico medico) {
-        return medico;
+    public MedicoResponseDTO updateMedico(Long id, MedicoRequestDTO medicoRequest) {
+        Medico medico = medicoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Medico no encontrado"));
+
+        Long especialidadId = medicoRequest.especialidadId();
+
+        Especialidad especialidad = especialidadRepository.findById(especialidadId)
+                        .orElseThrow(() -> new RuntimeException("Especialidad no válida"));
+
+        medico.setNombre(medicoRequest.nombre());
+        medico.setApellido(medicoRequest.apellido());
+        medico.setMatricula(medicoRequest.matricula());
+        medico.setEspecialidad(especialidad);
+
+        medico = medicoRepository.save(medico);
+
+        EspecialidadResponseDTO especialidadResponse = new EspecialidadResponseDTO(
+                especialidad.getId(),
+                especialidad.getNombre()
+        );
+
+        return new MedicoResponseDTO(
+                medico.getId(),
+                medico.getNombre(),
+                medico.getApellido(),
+                medico.getMatricula(),
+                especialidadResponse
+        );
     }
 
     public void deleteMedico(Long id) {
