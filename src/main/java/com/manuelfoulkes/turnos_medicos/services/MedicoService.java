@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+// TODO: Implementar mappers. Revisar validaciones
 @Service
 @RequiredArgsConstructor
 public class MedicoService {
