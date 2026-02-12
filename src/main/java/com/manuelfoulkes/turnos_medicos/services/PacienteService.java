@@ -1,8 +1,13 @@
 package com.manuelfoulkes.turnos_medicos.services;
 
+import com.manuelfoulkes.turnos_medicos.dtos.requests.PacienteRequestDTO;
+import com.manuelfoulkes.turnos_medicos.dtos.responses.PacienteResponseDTO;
+import com.manuelfoulkes.turnos_medicos.entities.Paciente;
 import com.manuelfoulkes.turnos_medicos.repositories.PacienteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -11,8 +16,30 @@ public class PacienteService {
     private final PacienteRepository pacienteRepository;
 
     public PacienteResponseDTO crearPaciente(PacienteRequestDTO pacienteRequest) {
-        // TODO: Completar
-        return null;
+        String dniPaciente = pacienteRequest.dni();
+
+        if (pacienteRepository.findByDni(dniPaciente).isPresent()) {
+            throw new RuntimeException("El paciente ya está registrado");
+        }
+
+        Paciente nuevoPaciente = new Paciente();
+
+        nuevoPaciente.setNombre(pacienteRequest.nombre());
+        nuevoPaciente.setApellido(pacienteRequest.apellido());
+        nuevoPaciente.setDni(pacienteRequest.dni());
+        nuevoPaciente.setEmail(pacienteRequest.email());
+        nuevoPaciente.setTelefono(pacienteRequest.telefono());
+
+        nuevoPaciente = pacienteRepository.save(nuevoPaciente);
+
+        return new PacienteResponseDTO(
+                nuevoPaciente.getId(),
+                nuevoPaciente.getNombre(),
+                nuevoPaciente.getApellido(),
+                nuevoPaciente.getDni(),
+                nuevoPaciente.getEmail(),
+                nuevoPaciente.getTelefono()
+        );
     }
 
     public PacienteResponseDTO getById(Long id) {
