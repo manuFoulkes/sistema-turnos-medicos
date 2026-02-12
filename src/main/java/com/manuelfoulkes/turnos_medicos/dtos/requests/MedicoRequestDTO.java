@@ -1,17 +1,18 @@
 package com.manuelfoulkes.turnos_medicos.dtos.requests;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 
-@Data
-public class MedicoRequestDTO {
+public record MedicoRequestDTO (
 
-    @NotBlank
-    private String nombre;
+    @NotBlank(message = "El nombre es obligatorio")
+    String nombre,
 
-    private String apellido;
+    @NotBlank(message = "El apellido es obligatorio")
+    String apellido,
 
-    private String matricula;
+    @NotBlank(message = "La matrícula es obligatoria")
+    String matricula,
 
-    private Long especialidadId;
-}
+    @NotBlank(message = "La especialidad es obligatoria")
+    Long especialidadId
+) {}
