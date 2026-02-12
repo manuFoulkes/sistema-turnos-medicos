@@ -24,7 +24,7 @@ public class Medico {
     @Column(name = "apellido", nullable = false)
     private String apellido;
 
-    @Column(name = "matricula", nullable = false)
+    @Column(name = "matricula", nullable = false, unique = true)
     private String matricula;
 
     @ManyToOne
