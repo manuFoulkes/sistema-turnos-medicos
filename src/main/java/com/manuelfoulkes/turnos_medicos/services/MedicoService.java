@@ -53,12 +53,28 @@ public class MedicoService {
                 especialidadResponseDTO
         );
     }
-
-    public Medico getMedicoById(Long id) {
-        return medicoRepository.findById(id)
+    
+    public MedicoResponseDTO getMedicoById(Long id) {
+        Medico medico = medicoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
+
+        Especialidad especialidad = medico.getEspecialidad();
+
+        EspecialidadResponseDTO especialidadResponseDTO = new EspecialidadResponseDTO(
+                especialidad.getId(),
+                especialidad.getNombre()
+        );
+
+        return new MedicoResponseDTO(
+                medico.getId(),
+                medico.getNombre(),
+                medico.getApellido(),
+                medico.getMatricula(),
+                especialidadResponseDTO
+        );
     }
 
+    // TODO: Implementar DTO
     public List<Medico> getAllMedicos() {
         return medicoRepository.findAll();
     }
