@@ -7,6 +7,7 @@ import com.manuelfoulkes.turnos_medicos.repositories.PacienteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -57,12 +58,28 @@ public class PacienteService {
     }
 
     public List<PacienteResponseDTO> getAllPacientes() {
-        // TODO: Completar
-        return null;
+        List<Paciente> pacientes = pacienteRepository.findAll();
+
+        List<PacienteResponseDTO> pacientesResponse = new ArrayList<>();
+
+        for (Paciente p : pacientes) {
+            PacienteResponseDTO pacienteResponse = new PacienteResponseDTO(
+                    p.getId(),
+                    p.getNombre(),
+                    p.getApellido(),
+                    p.getDni(),
+                    p.getEmail(),
+                    p.getTelefono()
+            );
+
+            pacientesResponse.add(pacienteResponse)
+        }
+
+        return pacientesResponse;
     }
 
     public PacienteResponseDTO updatePaciente(Long id, PacienteRequestDTO pacienteRequest) {
-        // TODO: Completar
+        
         return null;
     }
 
