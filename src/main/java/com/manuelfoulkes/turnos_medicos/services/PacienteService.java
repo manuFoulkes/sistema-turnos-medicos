@@ -79,8 +79,25 @@ public class PacienteService {
     }
 
     public PacienteResponseDTO updatePaciente(Long id, PacienteRequestDTO pacienteRequest) {
-        
-        return null;
+        Paciente paciente = pacienteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+
+        paciente.setNombre(pacienteRequest.nombre());
+        paciente.setApellido(pacienteRequest.apellido());
+        paciente.setDni(pacienteRequest.dni());
+        paciente.setEmail(pacienteRequest.email());
+        paciente.setTelefono(pacienteRequest.telefono());
+
+        paciente = pacienteRepository.save(paciente);
+
+        return new PacienteResponseDTO(
+                paciente.getId(),
+                paciente.getNombre(),
+                paciente.getApellido(),
+                paciente.getDni(),
+                paciente.getEmail(),
+                paciente.getTelefono()
+        );
     }
 
     public void deletePaciente(Long id) {
