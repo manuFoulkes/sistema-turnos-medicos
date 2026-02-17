@@ -10,6 +10,7 @@ import com.manuelfoulkes.turnos_medicos.repositories.MedicoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 // TODO: Implementar mappers. Revisar validaciones
 @Service
@@ -53,7 +54,7 @@ public class MedicoService {
                 especialidadResponseDTO
         );
     }
-    
+
     public MedicoResponseDTO getMedicoById(Long id) {
         Medico medico = medicoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
@@ -74,13 +75,35 @@ public class MedicoService {
         );
     }
 
-    // TODO: Implementar DTO
-    public List<Medico> getAllMedicos() {
-        return medicoRepository.findAll();
+    public List<MedicoResponseDTO> getAllMedicos() {
+        List<Medico> medicos = medicoRepository.findAll();
+
+        List<MedicoResponseDTO> medicosResponse = new ArrayList<>();
+
+        for (Medico m : medicos) {
+            Especialidad especialidad = m.getEspecialidad();
+
+            EspecialidadResponseDTO especialidadResponse = new EspecialidadResponseDTO(
+                    especialidad.getId(),
+                    especialidad.getNombre()
+            );
+
+            MedicoResponseDTO medicoResponse = new MedicoResponseDTO(
+                    m.getId(),
+                    m.getNombre(),
+                    m.getApellido(),
+                    m.getMatricula(),
+                    especialidadResponse
+            );
+
+            medicosResponse.add(medicoResponse);
+        }
+
+        return medicosResponse;
     }
 
     public MedicoResponseDTO updateMedico(Long id, MedicoRequestDTO medicoRequest) {
-        Medico medico = medicoRepository.findById(id)
+         Medico medico = medicoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Medico no encontrado"));
 
         Long especialidadId = medicoRequest.especialidadId();
