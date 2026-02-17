@@ -43,8 +43,17 @@ public class PacienteService {
     }
 
     public PacienteResponseDTO getById(Long id) {
-        // TODO: Completar
-        return null;
+        Paciente paciente = pacienteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+
+        return new PacienteResponseDTO(
+                paciente.getId(),
+                paciente.getNombre(),
+                paciente.getApellido(),
+                paciente.getDni(),
+                paciente.getEmail(),
+                paciente.getTelefono()
+        );
     }
 
     public List<PacienteResponseDTO> getAllPacientes() {
