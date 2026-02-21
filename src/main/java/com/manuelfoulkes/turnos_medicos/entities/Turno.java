@@ -22,7 +22,7 @@ public class Turno {
     private LocalDateTime fechaHora;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "estado", nullable = false)
+    @Column(name = "estado")
     private EstadoTurno estado;
 
     @ManyToOne
