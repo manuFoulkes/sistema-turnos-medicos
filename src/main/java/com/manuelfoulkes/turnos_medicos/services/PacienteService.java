@@ -72,7 +72,7 @@ public class PacienteService {
                     p.getTelefono()
             );
 
-            pacientesResponse.add(pacienteResponse)
+            pacientesResponse.add(pacienteResponse);
         }
 
         return pacientesResponse;
