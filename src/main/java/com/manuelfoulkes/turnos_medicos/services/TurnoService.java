@@ -89,6 +89,56 @@ public class TurnoService {
         );
     }
 
+    //TODO: Falta validación de fecha del turno para cancelar
+    // TODO: Implementar mappers
+    // TODO: lIMPIAR
+    public TurnoResponseDTO cancelarTurno(Long pacienteId, Long turnoId) {
+        Paciente paciente = pacienteRepository.findById(pacienteId)
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+
+        Turno turno = turnoRepository.findById(turnoId)
+                .orElseThrow(() -> new RuntimeException("Turno no encontrado"));
+
+        turno.setEstado(EstadoTurno.CANCELADO);
+
+        turno = turnoRepository.save(turno);
+
+        PacienteResponseDTO pacienteResponse = new PacienteResponseDTO(
+                paciente.getId(),
+                paciente.getNombre(),
+                paciente.getApellido(),
+                paciente.getDni(),
+                paciente.getEmail(),
+                paciente.getTelefono()
+        );
+
+        Medico medico = turno.getMedico(); // revisar warning
+
+        Especialidad especialidad =  medico.getEspecialidad();
+
+        EspecialidadResponseDTO  especialidadResponse = new EspecialidadResponseDTO(
+                especialidad.getId(),
+                especialidad.getNombre()
+        );
+
+        MedicoResponseDTO medicoResponse = new MedicoResponseDTO(
+                medico.getId(),
+                medico.getNombre(),
+                medico.getApellido(),
+                medico.getMatricula(),
+                especialidadResponse
+        );
+
+        return new TurnoResponseDTO(
+                turno.getId(),
+                turno.getFechaHora(),
+                turno.getEstado(),
+                pacienteResponse,
+                medicoResponse,
+                turno.getFechaCreacion()
+        );
+    }
+
     private boolean existeTurno(Long medicoId, LocalDateTime fechaHora, EstadoTurno estadoTurno) {
         return turnoRepository.existsByMedicoIdAndFechaHoraAndEstadoNot(medicoId, fechaHora, estadoTurno);
     }
