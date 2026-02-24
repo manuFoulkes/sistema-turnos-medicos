@@ -89,9 +89,7 @@ public class TurnoService {
         );
     }
 
-    //TODO: Falta validación de fecha del turno para cancelar
-    // TODO: Implementar mappers
-    // TODO: lIMPIAR
+    // TODO: Implementar mappers y limpiar
     public TurnoResponseDTO cancelarTurno(Long pacienteId, Long turnoId) {
         Paciente paciente = pacienteRepository.findById(pacienteId)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
@@ -99,9 +97,28 @@ public class TurnoService {
         Turno turno = turnoRepository.findById(turnoId)
                 .orElseThrow(() -> new RuntimeException("Turno no encontrado"));
 
+        if(!turno.getPaciente().getId().equals(pacienteId)) {
+            throw new RuntimeException("No existe un turno asignado con ese ID");
+        }
+
+        if(turno.getEstado().equals(EstadoTurno.CANCELADO)) {
+            throw new RuntimeException("El turno ya fue cancelado");
+        }
+
+        if(turno.getEstado().equals(EstadoTurno.COMPLETADO)) {
+            throw new RuntimeException("El turno ya ha sido completado");
+        }
+
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime limite = turno.getFechaHora().minusHours(48);
+
+        if(ahora.isAfter(limite)) {
+            throw new RuntimeException("No se puede cancelar un turno con menos de 48 hs de anticipación");
+        }
+
         turno.setEstado(EstadoTurno.CANCELADO);
 
-        turno = turnoRepository.save(turno);
+        Turno turnoCancelado = turnoRepository.save(turno);
 
         PacienteResponseDTO pacienteResponse = new PacienteResponseDTO(
                 paciente.getId(),
@@ -112,7 +129,7 @@ public class TurnoService {
                 paciente.getTelefono()
         );
 
-        Medico medico = turno.getMedico(); // revisar warning
+        Medico medico = turnoCancelado.getMedico();
 
         Especialidad especialidad =  medico.getEspecialidad();
 
@@ -130,12 +147,12 @@ public class TurnoService {
         );
 
         return new TurnoResponseDTO(
-                turno.getId(),
-                turno.getFechaHora(),
-                turno.getEstado(),
+                turnoCancelado.getId(),
+                turnoCancelado.getFechaHora(),
+                turnoCancelado.getEstado(),
                 pacienteResponse,
                 medicoResponse,
-                turno.getFechaCreacion()
+                turnoCancelado.getFechaCreacion()
         );
     }
 
