@@ -156,8 +156,93 @@ public class TurnoService {
         );
     }
 
+    // TODO: Implementar mapppers y limpiar
+    public TurnoResponseDTO modificarTurno(Long pacienteId, Long turnoId, TurnoRequestDTO turnoRequest) {
+        Paciente paciente = pacienteRepository.findById(pacienteId)
+                .orElseThrow(() -> new RuntimeException("El paciente no existe"));
+
+        Turno turno = turnoRepository.findById(turnoId)
+                .orElseThrow(() -> new RuntimeException("El turno no existe"));
+
+        if(!turno.getPaciente().getId().equals(pacienteId)) {
+            throw new RuntimeException("El turno no pertenece al paciente");
+        }
+
+        if(turno.getEstado().equals(EstadoTurno.CANCELADO)) {
+            throw new RuntimeException("El turno ya ha sido cancelado");
+        }
+
+        if(turno.getEstado().equals(EstadoTurno.COMPLETADO)) {
+            throw new RuntimeException("El turno ya ha sido completado");
+        }
+
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime limite = turno.getFechaHora().minusHours(48);
+
+        if(ahora.isAfter(limite)) {
+            throw new RuntimeException("No se puede modificar un turno con menos de 48 hs de anticipación");
+        }
+
+        Medico medico = medicoRepository.findById(turnoRequest.medicoId())
+                        .orElseThrow(() -> new RuntimeException("El médico no existe"));
+
+        boolean existeTurno = existeTurno(medico.getId(), turnoRequest.fechaHora(), EstadoTurno.CANCELADO, turnoId);
+
+        if(existeTurno) {
+            throw new RuntimeException("El médico ya tiene un turno asignado en ese horario");
+        }
+
+        if(ahora.isAfter(turnoRequest.fechaHora())) {
+            throw new RuntimeException("La fecha debe ser futura");
+        }
+
+        turno.setFechaHora(turnoRequest.fechaHora());
+        turno.setMedico(medico);
+
+        Turno turnoModificado = turnoRepository.save(turno);
+        Especialidad especialidad = medico.getEspecialidad();
+
+        PacienteResponseDTO pacienteResponse = new PacienteResponseDTO(
+                paciente.getId(),
+                paciente.getNombre(),
+                paciente.getApellido(),
+                paciente.getDni(),
+                paciente.getEmail(),
+                paciente.getTelefono()
+        );
+
+        EspecialidadResponseDTO  especialidadResponse = new EspecialidadResponseDTO(
+                especialidad.getId(),
+                especialidad.getNombre()
+        );
+
+        MedicoResponseDTO medicoResponse = new MedicoResponseDTO(
+                medico.getId(),
+                medico.getNombre(),
+                medico.getApellido(),
+                medico.getMatricula(),
+                especialidadResponse
+        );
+
+        return new TurnoResponseDTO(
+                turnoModificado.getId(),
+                turnoModificado.getFechaHora(),
+                turnoModificado.getEstado(),
+                pacienteResponse,
+                medicoResponse,
+                turnoModificado.getFechaCreacion()
+        );
+    }
+
+    // TODO: Completar
+    public void completarTurno(Long pacienteId, Long turnoId) {}
+
     private boolean existeTurno(Long medicoId, LocalDateTime fechaHora, EstadoTurno estadoTurno) {
         return turnoRepository.existsByMedicoIdAndFechaHoraAndEstadoNot(medicoId, fechaHora, estadoTurno);
+    }
+
+    private boolean existeTurno(Long medicoId, LocalDateTime fechaHora, EstadoTurno estadoTurno, Long turnoId) {
+        return turnoRepository.existsByMedicoIdAndFechaHoraAndEstadoNotAndIdNot(medicoId, fechaHora, estadoTurno, turnoId);
     }
 
     private int getTurnosActivos(Long pacienteId, EstadoTurno estadoTurno, LocalDateTime fechaHora) {

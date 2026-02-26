@@ -11,4 +11,6 @@ public interface TurnoRepository extends JpaRepository<Turno, Long> {
     boolean existsByMedicoIdAndFechaHoraAndEstadoNot(Long medicoId, LocalDateTime fechaHora, EstadoTurno estado);
 
     int countByPacienteIdAndEstadoAndFechaHoraAfter(Long pacienteId, EstadoTurno estado, LocalDateTime fechaHora);
+
+    boolean existsByMedicoIdAndFechaHoraAndEstadoNotAndIdNot(Long medicoId, LocalDateTime fechaHora, EstadoTurno estado, Long turnoId);
 }
