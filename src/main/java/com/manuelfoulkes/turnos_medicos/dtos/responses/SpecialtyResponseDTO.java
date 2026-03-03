@@ -1,7 +1,7 @@
 package com.manuelfoulkes.turnos_medicos.dtos.responses;
 
-public record EspecialidadResponseDTO(
+public record SpecialtyResponseDTO(
         Long id,
-        String nombre
+        String name
 ) {
 }
