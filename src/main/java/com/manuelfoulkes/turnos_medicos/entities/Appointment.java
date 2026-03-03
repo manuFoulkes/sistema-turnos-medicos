@@ -22,15 +22,15 @@ public class Turno {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado")
-    private EstadoTurno estado;
+    private AppointmentStatus estado;
 
     @ManyToOne
     @JoinColumn(name = "paciente_id", nullable = false)
-    private Paciente paciente;
+    private Patient patient;
 
     @ManyToOne
     @JoinColumn(name = "medico_id", nullable = false)
-    private Medico medico;
+    private Doctor doctor;
 
     @Column(updatable = false)
     private LocalDateTime fechaCreacion;
@@ -39,7 +39,7 @@ public class Turno {
     protected void onCreate() {
         fechaCreacion = LocalDateTime.now();
         if (estado == null) {
-            estado = EstadoTurno.RESERVADO;
+            estado = AppointmentStatus.RESERVED;
         }
     }
 }
