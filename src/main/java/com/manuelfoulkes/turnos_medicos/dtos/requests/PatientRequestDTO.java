@@ -2,21 +2,21 @@ package com.manuelfoulkes.turnos_medicos.dtos.requests;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record PacienteRequestDTO(
+public record PatientRequestDTO(
 
         @NotBlank(message = "El nombre es obligatorio")
-        String nombre,
+        String name,
 
         @NotBlank(message = "El apellido es obligatorio")
-        String apellido,
+        String lastName,
 
         @NotBlank(message = "El DNI es obligatorio")
-        String dni,
+        String nationalId,
 
         @NotBlank(message = "El email es obligatorio")
         String email,
 
         @NotBlank(message = "El telefono es obligatorio")
-        String telefono
+        String phoneNumber
 ) {
 }
