@@ -4,15 +4,15 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDateTime;
 
-public record TurnoRequestDTO(
+public record AppointmentRequestDTO(
 
         @NotBlank(message = "La fecha y la hora son obligatorias")
-        LocalDateTime fechaHora,
+        LocalDateTime dateTime,
 
         @NotBlank(message = "El id del paciente es obligatorio")
-        Long pacienteId,
+        Long patientId,
 
         @NotBlank(message = "El id del médico es obligatorio")
-        Long medicoId
+        Long doctorId
 ) {
 }
