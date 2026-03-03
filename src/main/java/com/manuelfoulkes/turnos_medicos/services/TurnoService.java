@@ -12,6 +12,7 @@ import com.manuelfoulkes.turnos_medicos.repositories.TurnoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
@@ -234,8 +235,67 @@ public class TurnoService {
         );
     }
 
-    // TODO: Completar
-    public void completarTurno(Long pacienteId, Long turnoId) {}
+    // TODO: Limpiar
+    public TurnoResponseDTO completarTurno(Long turnoId) {
+        Turno turno = turnoRepository.findById(turnoId)
+                .orElseThrow(() -> new RuntimeException("El turno no existe"));
+
+        if(turno.getEstado() != EstadoTurno.RESERVADO) {
+            throw new RuntimeException("Solo se pueden completar turnos con estado RESERVADO");
+        }
+
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime ventanaInicio = turno.getFechaHora().minusMinutes(30);
+        LocalDateTime ventanaFin = turno.getFechaHora().plusMinutes(10);
+
+        if(ahora.isBefore(ventanaInicio)) {
+            throw new RuntimeException("El turno no se puede completar todavía");
+        }
+
+        if(ahora.isAfter(ventanaFin)) {
+            throw new RuntimeException("El turno ha expirado");
+        }
+
+        turno.setEstado(EstadoTurno.COMPLETADO);
+        Turno turnoCompletado = turnoRepository.save(turno);
+
+        Paciente paciente = turno.getPaciente();
+
+        PacienteResponseDTO pacienteResponse = new PacienteResponseDTO(
+                paciente.getId(),
+                paciente.getNombre(),
+                paciente.getApellido(),
+                paciente.getDni(),
+                paciente.getEmail(),
+                paciente.getTelefono()
+        );
+
+        Medico medico = turnoCompletado.getMedico();
+
+        Especialidad especialidad = medico.getEspecialidad();
+
+        EspecialidadResponseDTO especialidadResponse = new EspecialidadResponseDTO(
+                especialidad.getId(),
+                especialidad.getNombre()
+        );
+
+        MedicoResponseDTO medicoResponse = new MedicoResponseDTO(
+                medico.getId(),
+                medico.getNombre(),
+                medico.getApellido(),
+                medico.getMatricula(),
+               especialidadResponse
+        );
+
+        return new TurnoResponseDTO(
+                turnoCompletado.getId(),
+                turnoCompletado.getFechaHora(),
+                turnoCompletado.getEstado(),
+                pacienteResponse,
+                medicoResponse,
+                turnoCompletado.getFechaCreacion()
+        );
+    }
 
     private boolean existeTurno(Long medicoId, LocalDateTime fechaHora, EstadoTurno estadoTurno) {
         return turnoRepository.existsByMedicoIdAndFechaHoraAndEstadoNot(medicoId, fechaHora, estadoTurno);
