@@ -6,40 +6,40 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "turnos")
+@Table(name = "appointments")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Turno {
+public class Appointment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private Long id;
 
-    @Column(name = "fecha_hora", nullable = false)
-    private LocalDateTime fechaHora;
+    @Column(name = "date_time", nullable = false)
+    private LocalDateTime dateTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "estado")
-    private AppointmentStatus estado;
+    @Column(name = "status")
+    private AppointmentStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "paciente_id", nullable = false)
+    @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
     @ManyToOne
-    @JoinColumn(name = "medico_id", nullable = false)
+    @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
     @Column(updatable = false)
-    private LocalDateTime fechaCreacion;
+    private LocalDateTime creationDate;
 
     @PrePersist
     protected void onCreate() {
-        fechaCreacion = LocalDateTime.now();
-        if (estado == null) {
-            estado = AppointmentStatus.RESERVED;
+        creationDate = LocalDateTime.now();
+        if (status == null) {
+            status = AppointmentStatus.RESERVED;
         }
     }
 }
