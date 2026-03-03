@@ -4,14 +4,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "especialidad")
+@Table(name = "specialties")
 @Setter @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode
 @Builder
-public class Especialidad {
+public class Specialty {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,6 +19,6 @@ public class Especialidad {
     @Setter(AccessLevel.NONE)
     private Long id;
 
-    @Column(name = "nombre", nullable = false, unique = true)
-    private String nombre;
+    @Column(name = "name", nullable = false, unique = true)
+    private String name;
 }
