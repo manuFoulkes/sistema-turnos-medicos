@@ -54,4 +54,8 @@ public class SpecialtyService {
 
         return new SpecialtyResponseDTO(updatedSpecialty.getId(), updatedSpecialty.getName());
     }
+
+    public void deleteSpecialty(Long id) {
+        specialtyRepository.deleteById(id);
+    }
 }
