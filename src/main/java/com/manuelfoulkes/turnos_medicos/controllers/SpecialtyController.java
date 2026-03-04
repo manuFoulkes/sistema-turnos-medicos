@@ -45,4 +45,10 @@ public class SpecialtyController {
         SpecialtyResponseDTO specialtyResponse = specialtyService.updateSpecialty(id, specialtyRequest);
         return ResponseEntity.ok(specialtyResponse);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSpecialty(@PathVariable @Positive Long id){
+        specialtyService.deleteSpecialty(id);
+        return ResponseEntity.noContent().build();
+    }
 }
