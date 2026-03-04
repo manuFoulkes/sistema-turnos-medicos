@@ -44,11 +44,11 @@ public class SpecialtyService {
         return specialtiesResponse;
     }
 
-    public SpecialtyResponseDTO updateEspecialidad(SpecialtyRequestDTO specialtyRequestDTO) {
+    public SpecialtyResponseDTO updateSpecialty(Long id, SpecialtyRequestDTO specialtyRequest) {
         Specialty specialty = specialtyRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Especialidad no encontrada"));
 
-        specialty.setName(name);
+        specialty.setName(specialtyRequest.name());
 
         Specialty updatedSpecialty = specialtyRepository.save(specialty);
 
