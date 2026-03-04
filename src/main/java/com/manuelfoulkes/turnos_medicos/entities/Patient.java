@@ -4,14 +4,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "paciente")
+@Table(name = "patients")
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode
 @Builder
-public class Paciente {
+public class Patient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,19 +19,19 @@ public class Paciente {
     @Setter(AccessLevel.NONE)
     private Long id;
 
-    @Column(name = "nombre", nullable = false)
-    private String nombre;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Column(name = "apellido", nullable = false)
-    private String apellido;
+    @Column(name = "lastName", nullable = false)
+    private String lastName;
 
-    @Column(name = "dni", nullable = false)
-    private String dni;
+    @Column(name = "nationalId", nullable = false)
+    private String nationalId;
 
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "telefono", nullable = false)
-    private String telefono;
+    @Column(name = "phoneNumber", nullable = false)
+    private String phoneNumber;
 
 }
