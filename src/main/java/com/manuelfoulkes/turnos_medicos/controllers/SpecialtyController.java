@@ -27,4 +27,10 @@ public class SpecialtyController {
     public ResponseEntity<List<SpecialtyResponseDTO>> getSpecialties(){
         return ResponseEntity.ok(specialtyService.getAllSpecialties());
     }
+    
+    @PostMapping
+    public ResponseEntity<SpecialtyResponseDTO> createSpecialty(@Valid @RequestBody SpecialtyRequestDTO specialtyRequestDTO){
+        SpecialtyResponseDTO specialtyResponse = specialtyService.createSpecialty(specialtyRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(specialtyResponse);
+    }
 }
