@@ -4,6 +4,7 @@ import com.manuelfoulkes.turnos_medicos.dtos.requests.SpecialtyRequestDTO;
 import com.manuelfoulkes.turnos_medicos.dtos.responses.SpecialtyResponseDTO;
 import com.manuelfoulkes.turnos_medicos.services.SpecialtyService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,10 +28,21 @@ public class SpecialtyController {
     public ResponseEntity<List<SpecialtyResponseDTO>> getSpecialties(){
         return ResponseEntity.ok(specialtyService.getAllSpecialties());
     }
-    
+
     @PostMapping
-    public ResponseEntity<SpecialtyResponseDTO> createSpecialty(@Valid @RequestBody SpecialtyRequestDTO specialtyRequestDTO){
+    public ResponseEntity<SpecialtyResponseDTO> createSpecialty(
+            @Valid @RequestBody SpecialtyRequestDTO specialtyRequestDTO
+    ){
         SpecialtyResponseDTO specialtyResponse = specialtyService.createSpecialty(specialtyRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(specialtyResponse);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SpecialtyResponseDTO> updateSpecialty(
+            @PathVariable @Positive Long id,
+            @Valid @RequestBody SpecialtyRequestDTO specialtyRequest
+    ){
+        SpecialtyResponseDTO specialtyResponse = specialtyService.updateSpecialty(id, specialtyRequest);
+        return ResponseEntity.ok(specialtyResponse);
     }
 }
