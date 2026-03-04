@@ -16,4 +16,10 @@ public class SpecialtyController {
 
     private final SpecialtyService specialtyService;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<SpecialtyResponseDTO> getSpecialtyById(@PathVariable Long id){
+        return ResponseEntity.ok(specialtyService.getSpecialtyById(id));
+    }
+
+    
 }
