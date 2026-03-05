@@ -16,33 +16,6 @@ public class PatientService {
 
     private final PatientRepository patientRepository;
 
-    public PatientResponseDTO createPatient(PatientRequestDTO patientRequest) {
-        String nationalId = patientRequest.nationalId();
-
-        if(patientRepository.findByNationalId(nationalId).isPresent()) {
-            throw new RuntimeException("El paciente ya está registrado");
-        }
-
-        Patient newPatient = new Patient();
-
-        newPatient.setName(patientRequest.name());
-        newPatient.setLastName(patientRequest.lastName());
-        newPatient.setNationalId(patientRequest.nationalId());
-        newPatient.setEmail(patientRequest.email());
-        newPatient.setPhoneNumber(patientRequest.phoneNumber());
-
-        newPatient = patientRepository.save(newPatient);
-
-        return new PatientResponseDTO(
-                newPatient.getId(),
-                newPatient.getName(),
-                newPatient.getLastName(),
-                newPatient.getNationalId(),
-                newPatient.getEmail(),
-                newPatient.getPhoneNumber()
-        );
-    }
-
     public PatientResponseDTO getById(Long id) {
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
@@ -76,6 +49,33 @@ public class PatientService {
         }
 
         return pacientesResponse;
+    }
+
+    public PatientResponseDTO createPatient(PatientRequestDTO patientRequest) {
+        String nationalId = patientRequest.nationalId();
+
+        if(patientRepository.findByNationalId(nationalId).isPresent()) {
+            throw new RuntimeException("El paciente ya está registrado");
+        }
+
+        Patient newPatient = new Patient();
+
+        newPatient.setName(patientRequest.name());
+        newPatient.setLastName(patientRequest.lastName());
+        newPatient.setNationalId(patientRequest.nationalId());
+        newPatient.setEmail(patientRequest.email());
+        newPatient.setPhoneNumber(patientRequest.phoneNumber());
+
+        newPatient = patientRepository.save(newPatient);
+
+        return new PatientResponseDTO(
+                newPatient.getId(),
+                newPatient.getName(),
+                newPatient.getLastName(),
+                newPatient.getNationalId(),
+                newPatient.getEmail(),
+                newPatient.getPhoneNumber()
+        );
     }
 
     public PatientResponseDTO updatePatient(Long id, PatientRequestDTO patientRequest) {
