@@ -17,13 +17,6 @@ public class SpecialtyService {
     private final SpecialtyRepository specialtyRepository;
 
     // TODO: Refactor: Usar DTOs en todos los métodos
-    public SpecialtyResponseDTO createSpecialty(SpecialtyRequestDTO specialtyRequest) {
-        Specialty specialty = new Specialty();
-        specialty.setName(specialtyRequest.name());
-
-        Specialty newSpecialty = specialtyRepository.save(specialty);
-        return new SpecialtyResponseDTO(newSpecialty.getId(), newSpecialty.getName());
-    }
 
     public SpecialtyResponseDTO getSpecialtyById(Long id) {
         Specialty specialty = specialtyRepository.findById(id)
@@ -40,8 +33,15 @@ public class SpecialtyService {
             SpecialtyResponseDTO specialtyResponse = new SpecialtyResponseDTO(specialty.getId(), specialty.getName());
             specialtiesResponse.add(specialtyResponse);
         }
-
         return specialtiesResponse;
+    }
+
+    public SpecialtyResponseDTO createSpecialty(SpecialtyRequestDTO specialtyRequest) {
+        Specialty specialty = new Specialty();
+        specialty.setName(specialtyRequest.name());
+
+        Specialty newSpecialty = specialtyRepository.save(specialty);
+        return new SpecialtyResponseDTO(newSpecialty.getId(), newSpecialty.getName());
     }
 
     public SpecialtyResponseDTO updateSpecialty(Long id, SpecialtyRequestDTO specialtyRequest) {
