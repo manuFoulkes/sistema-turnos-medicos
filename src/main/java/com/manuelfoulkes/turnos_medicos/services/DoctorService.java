@@ -20,41 +20,6 @@ public class DoctorService {
     private final DoctorRepository doctorRepository;
     private final SpecialtyRepository specialtyRepository;
 
-    public DoctorResponseDTO createDoctor(DoctorRequestDTO doctorRequestDTO) {
-        String licenseNumber = doctorRequestDTO.licenseNumber();
-
-        if (doctorRepository.findByLicenseNumber(licenseNumber).isPresent()) {
-            throw new RuntimeException("El medico ya existe");
-        }
-
-        Long specialtyId = doctorRequestDTO.specialtyId();
-
-        Specialty specialty = specialtyRepository.findById(specialtyId)
-                .orElseThrow(() -> new RuntimeException("La especialidad no existe"));
-
-        SpecialtyResponseDTO specialtyResponseDTO = new SpecialtyResponseDTO(
-                specialty.getId(),
-                specialty.getName()
-        );
-
-        Doctor newDoctor = new Doctor();
-
-        newDoctor.setName(doctorRequestDTO.name());
-        newDoctor.setLastName(doctorRequestDTO.lastName());
-        newDoctor.setLicenseNumber(doctorRequestDTO.licenseNumber());
-        newDoctor.setSpecialty(specialty);
-
-        newDoctor = doctorRepository.save(newDoctor);
-
-        return new DoctorResponseDTO(
-                newDoctor.getId(),
-                newDoctor.getName(),
-                newDoctor.getLastName(),
-                newDoctor.getLicenseNumber(),
-                specialtyResponseDTO
-        );
-    }
-
     public DoctorResponseDTO getDoctorById(Long id) {
         Doctor doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
@@ -100,6 +65,41 @@ public class DoctorService {
         }
 
         return doctorsResponse;
+    }
+
+    public DoctorResponseDTO createDoctor(DoctorRequestDTO doctorRequestDTO) {
+        String licenseNumber = doctorRequestDTO.licenseNumber();
+
+        if (doctorRepository.findByLicenseNumber(licenseNumber).isPresent()) {
+            throw new RuntimeException("El medico ya existe");
+        }
+
+        Long specialtyId = doctorRequestDTO.specialtyId();
+
+        Specialty specialty = specialtyRepository.findById(specialtyId)
+                .orElseThrow(() -> new RuntimeException("La especialidad no existe"));
+
+        SpecialtyResponseDTO specialtyResponseDTO = new SpecialtyResponseDTO(
+                specialty.getId(),
+                specialty.getName()
+        );
+
+        Doctor newDoctor = new Doctor();
+
+        newDoctor.setName(doctorRequestDTO.name());
+        newDoctor.setLastName(doctorRequestDTO.lastName());
+        newDoctor.setLicenseNumber(doctorRequestDTO.licenseNumber());
+        newDoctor.setSpecialty(specialty);
+
+        newDoctor = doctorRepository.save(newDoctor);
+
+        return new DoctorResponseDTO(
+                newDoctor.getId(),
+                newDoctor.getName(),
+                newDoctor.getLastName(),
+                newDoctor.getLicenseNumber(),
+                specialtyResponseDTO
+        );
     }
 
     public DoctorResponseDTO updateDoctor(Long id, DoctorRequestDTO doctorRequest) {
