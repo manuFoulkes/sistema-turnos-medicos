@@ -89,73 +89,6 @@ public class AppointmentService {
         );
     }
 
-    // TODO: Implementar mappers y limpiar
-    public AppointmentResponseDTO cancelAppointment(Long patientId, Long appointmentId) {
-        Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
-
-        Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Turno no encontrado"));
-
-        if(!appointment.getPatient().getId().equals(patientId)) {
-            throw new RuntimeException("No existe un turno asignado con ese ID");
-        }
-
-        if(appointment.getStatus().equals(AppointmentStatus.CANCELLED)) {
-            throw new RuntimeException("El turno ya fue cancelado");
-        }
-
-        if(appointment.getStatus().equals(AppointmentStatus.COMPLETED)) {
-            throw new RuntimeException("El turno ya ha sido completado");
-        }
-
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime limitHour = appointment.getDateTime().minusHours(48);
-
-        if(now.isAfter(limitHour)) {
-            throw new RuntimeException("No se puede cancelar un turno con menos de 48 hs de anticipación");
-        }
-
-        appointment.setStatus(AppointmentStatus.CANCELLED);
-
-        Appointment cancelledAppointment = appointmentRepository.save(appointment);
-
-        PatientResponseDTO pacienteResponse = new PatientResponseDTO(
-                patient.getId(),
-                patient.getName(),
-                patient.getLastName(),
-                patient.getNationalId(),
-                patient.getEmail(),
-                patient.getPhoneNumber()
-        );
-
-        Doctor doctor = cancelledAppointment.getDoctor();
-
-        Specialty specialty =  doctor.getSpecialty();
-
-        SpecialtyResponseDTO specialtyResponse = new SpecialtyResponseDTO(
-                specialty.getId(),
-                specialty.getName()
-        );
-
-        DoctorResponseDTO doctorResponse = new DoctorResponseDTO(
-                doctor.getId(),
-                doctor.getName(),
-                doctor.getLastName(),
-                doctor.getLicenseNumber(),
-                specialtyResponse
-        );
-
-        return new AppointmentResponseDTO(
-                cancelledAppointment.getId(),
-                cancelledAppointment.getDateTime(),
-                cancelledAppointment.getStatus(),
-                pacienteResponse,
-                doctorResponse,
-                cancelledAppointment.getDateTime()
-        );
-    }
-
     // TODO: Implementar mapppers y limpiar
     public AppointmentResponseDTO updateAppointment(Long patientId, Long appointmentId, AppointmentRequestDTO appointmentRequest) {
         Patient patient = patientRepository.findById(patientId)
@@ -184,7 +117,7 @@ public class AppointmentService {
         }
 
         Doctor doctor = doctorRepository.findById(appointmentRequest.doctorId())
-                        .orElseThrow(() -> new RuntimeException("El médico no existe"));
+                .orElseThrow(() -> new RuntimeException("El médico no existe"));
 
         boolean appointmentIsBooking = appointmentIsBooking(doctor.getId(), appointmentRequest.dateTime(), AppointmentStatus.CANCELLED, appointmentId);
 
@@ -283,7 +216,7 @@ public class AppointmentService {
                 doctor.getName(),
                 doctor.getLastName(),
                 doctor.getLicenseNumber(),
-               especialidadResponse
+                especialidadResponse
         );
 
         return new AppointmentResponseDTO(
@@ -293,6 +226,73 @@ public class AppointmentService {
                 patientResponse,
                 doctorResponse,
                 appointmentCompleted.getCreationDate()
+        );
+    }
+
+    // TODO: Implementar mappers y limpiar
+    public AppointmentResponseDTO cancelAppointment(Long patientId, Long appointmentId) {
+        Patient patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Turno no encontrado"));
+
+        if(!appointment.getPatient().getId().equals(patientId)) {
+            throw new RuntimeException("No existe un turno asignado con ese ID");
+        }
+
+        if(appointment.getStatus().equals(AppointmentStatus.CANCELLED)) {
+            throw new RuntimeException("El turno ya fue cancelado");
+        }
+
+        if(appointment.getStatus().equals(AppointmentStatus.COMPLETED)) {
+            throw new RuntimeException("El turno ya ha sido completado");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime limitHour = appointment.getDateTime().minusHours(48);
+
+        if(now.isAfter(limitHour)) {
+            throw new RuntimeException("No se puede cancelar un turno con menos de 48 hs de anticipación");
+        }
+
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+
+        Appointment cancelledAppointment = appointmentRepository.save(appointment);
+
+        PatientResponseDTO pacienteResponse = new PatientResponseDTO(
+                patient.getId(),
+                patient.getName(),
+                patient.getLastName(),
+                patient.getNationalId(),
+                patient.getEmail(),
+                patient.getPhoneNumber()
+        );
+
+        Doctor doctor = cancelledAppointment.getDoctor();
+
+        Specialty specialty =  doctor.getSpecialty();
+
+        SpecialtyResponseDTO specialtyResponse = new SpecialtyResponseDTO(
+                specialty.getId(),
+                specialty.getName()
+        );
+
+        DoctorResponseDTO doctorResponse = new DoctorResponseDTO(
+                doctor.getId(),
+                doctor.getName(),
+                doctor.getLastName(),
+                doctor.getLicenseNumber(),
+                specialtyResponse
+        );
+
+        return new AppointmentResponseDTO(
+                cancelledAppointment.getId(),
+                cancelledAppointment.getDateTime(),
+                cancelledAppointment.getStatus(),
+                pacienteResponse,
+                doctorResponse,
+                cancelledAppointment.getDateTime()
         );
     }
 
