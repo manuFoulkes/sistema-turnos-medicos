@@ -1,18 +1,21 @@
 package com.manuelfoulkes.turnos_medicos.dtos.requests;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDateTime;
 
 public record AppointmentRequestDTO(
 
-        @NotBlank(message = "La fecha y la hora son obligatorias")
+        @NotNull(message = "La fecha y la hora son obligatorias")
         LocalDateTime dateTime,
 
-        @NotBlank(message = "El id del paciente es obligatorio")
+        @NotNull(message = "El id del paciente es obligatorio")
+        @Positive
         Long patientId,
 
-        @NotBlank(message = "El id del médico es obligatorio")
+        @NotNull(message = "El id del médico es obligatorio")
+        @Positive
         Long doctorId
 ) {
 }

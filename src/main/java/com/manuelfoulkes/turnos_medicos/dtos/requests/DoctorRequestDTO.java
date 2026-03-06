@@ -1,6 +1,7 @@
 package com.manuelfoulkes.turnos_medicos.dtos.requests;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record DoctorRequestDTO(
 
@@ -13,6 +14,6 @@ public record DoctorRequestDTO(
     @NotBlank(message = "La matrícula es obligatoria")
     String licenseNumber,
 
-    @NotBlank(message = "La especialidad es obligatoria")
+    @NotNull(message = "La especialidad es obligatoria")
     Long specialtyId
 ) {}
