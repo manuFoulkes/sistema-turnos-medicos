@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/appoitments")
+@RequestMapping("/api/appointments")
 @RequiredArgsConstructor
 public class AppointmentController {
 
@@ -25,28 +25,28 @@ public class AppointmentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/update")
     public ResponseEntity<AppointmentResponseDTO> updateAppointment(
-            @PathVariable @Positive Long patientId,
-            @PathVariable @Positive Long appointmentId,
+            @PathVariable @Positive Long id,
+            @RequestParam @Positive Long patientId,
             @Valid @RequestBody AppointmentRequestDTO request
     ) {
-        AppointmentResponseDTO response = appointmentService.updateAppointment(patientId, appointmentId, request);
+        AppointmentResponseDTO response = appointmentService.updateAppointment(patientId, id, request);
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/complete")
     public ResponseEntity<AppointmentResponseDTO> completeAppointment(@PathVariable @Positive Long id) {
         AppointmentResponseDTO response = appointmentService.completeAppointment(id);
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/cancel")
     public ResponseEntity<AppointmentResponseDTO> cancelAppointment(
-            @PathVariable @Positive Long patientId,
-            @PathVariable @Positive Long appointmentId
+            @PathVariable @Positive Long id,
+            @RequestParam @Positive Long patientId
     ) {
-        AppointmentResponseDTO response = appointmentService.cancelAppointment(patientId,  appointmentId);
+        AppointmentResponseDTO response = appointmentService.cancelAppointment(patientId, id);
         return ResponseEntity.ok(response);
     }
 }
