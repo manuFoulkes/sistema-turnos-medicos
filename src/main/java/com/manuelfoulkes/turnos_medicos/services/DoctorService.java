@@ -5,6 +5,8 @@ import com.manuelfoulkes.turnos_medicos.dtos.responses.SpecialtyResponseDTO;
 import com.manuelfoulkes.turnos_medicos.dtos.responses.DoctorResponseDTO;
 import com.manuelfoulkes.turnos_medicos.entities.Doctor;
 import com.manuelfoulkes.turnos_medicos.entities.Specialty;
+import com.manuelfoulkes.turnos_medicos.exceptions.custom.ResourceAlreadyExistsException;
+import com.manuelfoulkes.turnos_medicos.exceptions.custom.ResourceNotFoundException;
 import com.manuelfoulkes.turnos_medicos.repositories.SpecialtyRepository;
 import com.manuelfoulkes.turnos_medicos.repositories.DoctorRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,7 @@ public class DoctorService {
 
     public DoctorResponseDTO getDoctorById(Long id) {
         Doctor doctor = doctorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Médico no encontrado"));
 
         Specialty specialty = doctor.getSpecialty();
 
@@ -71,13 +73,13 @@ public class DoctorService {
         String licenseNumber = doctorRequestDTO.licenseNumber();
 
         if (doctorRepository.findByLicenseNumber(licenseNumber).isPresent()) {
-            throw new RuntimeException("El medico ya existe");
+            throw new ResourceAlreadyExistsException("El medico ya existe");
         }
 
         Long specialtyId = doctorRequestDTO.specialtyId();
 
         Specialty specialty = specialtyRepository.findById(specialtyId)
-                .orElseThrow(() -> new RuntimeException("La especialidad no existe"));
+                .orElseThrow(() -> new ResourceNotFoundException("La especialidad no existe"));
 
         SpecialtyResponseDTO specialtyResponseDTO = new SpecialtyResponseDTO(
                 specialty.getId(),
@@ -104,12 +106,12 @@ public class DoctorService {
 
     public DoctorResponseDTO updateDoctor(Long id, DoctorRequestDTO doctorRequest) {
          Doctor doctor = doctorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Medico no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Medico no encontrado"));
 
         Long specialtyId = doctorRequest.specialtyId();
 
         Specialty specialty = specialtyRepository.findById(specialtyId)
-                        .orElseThrow(() -> new RuntimeException("Especialidad no válida"));
+                        .orElseThrow(() -> new ResourceNotFoundException("Especialidad no encontrada"));
 
         doctor.setName(doctorRequest.name());
         doctor.setLastName(doctorRequest.lastName());
@@ -134,7 +136,7 @@ public class DoctorService {
 
     public void deleteDoctor(Long id) {
         Doctor doctor = doctorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Medico no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Medico no encontrado"));
 
         doctorRepository.delete(doctor);
     }

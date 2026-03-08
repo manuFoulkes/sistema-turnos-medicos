@@ -3,6 +3,7 @@ package com.manuelfoulkes.turnos_medicos.services;
 import com.manuelfoulkes.turnos_medicos.dtos.requests.SpecialtyRequestDTO;
 import com.manuelfoulkes.turnos_medicos.dtos.responses.SpecialtyResponseDTO;
 import com.manuelfoulkes.turnos_medicos.entities.Specialty;
+import com.manuelfoulkes.turnos_medicos.exceptions.custom.ResourceNotFoundException;
 import com.manuelfoulkes.turnos_medicos.repositories.SpecialtyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class SpecialtyService {
 
     public SpecialtyResponseDTO getSpecialtyById(Long id) {
         Specialty specialty = specialtyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Especialidad no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Especialidad no encontrada"));
 
         return new SpecialtyResponseDTO(specialty.getId(), specialty.getName());
     }
@@ -46,7 +47,7 @@ public class SpecialtyService {
 
     public SpecialtyResponseDTO updateSpecialty(Long id, SpecialtyRequestDTO specialtyRequest) {
         Specialty specialty = specialtyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Especialidad no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Especialidad no encontrada"));
 
         specialty.setName(specialtyRequest.name());
 

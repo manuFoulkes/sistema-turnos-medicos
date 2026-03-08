@@ -3,6 +3,8 @@ package com.manuelfoulkes.turnos_medicos.services;
 import com.manuelfoulkes.turnos_medicos.dtos.requests.PatientRequestDTO;
 import com.manuelfoulkes.turnos_medicos.dtos.responses.PatientResponseDTO;
 import com.manuelfoulkes.turnos_medicos.entities.Patient;
+import com.manuelfoulkes.turnos_medicos.exceptions.custom.ResourceAlreadyExistsException;
+import com.manuelfoulkes.turnos_medicos.exceptions.custom.ResourceNotFoundException;
 import com.manuelfoulkes.turnos_medicos.repositories.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,7 @@ public class PatientService {
 
     public PatientResponseDTO getById(Long id) {
         Patient patient = patientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Paciente no encontrado"));
 
         return new PatientResponseDTO(
                 patient.getId(),
@@ -55,7 +57,7 @@ public class PatientService {
         String nationalId = patientRequest.nationalId();
 
         if(patientRepository.findByNationalId(nationalId).isPresent()) {
-            throw new RuntimeException("El paciente ya está registrado");
+            throw new ResourceAlreadyExistsException("El paciente ya está registrado");
         }
 
         Patient newPatient = new Patient();
@@ -80,7 +82,7 @@ public class PatientService {
 
     public PatientResponseDTO updatePatient(Long id, PatientRequestDTO patientRequest) {
         Patient patient = patientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Paciente no encontrado"));
 
         patient.setName(patientRequest.name());
         patient.setLastName(patientRequest.lastName());
@@ -102,7 +104,7 @@ public class PatientService {
 
     public void deletePatient(Long id) {
         Patient patient = patientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Paciente no encontrado"));
 
         patientRepository.delete(patient);
     }
