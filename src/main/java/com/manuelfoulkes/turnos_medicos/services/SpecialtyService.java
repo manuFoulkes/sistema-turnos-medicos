@@ -3,7 +3,9 @@ package com.manuelfoulkes.turnos_medicos.services;
 import com.manuelfoulkes.turnos_medicos.dtos.requests.SpecialtyRequestDTO;
 import com.manuelfoulkes.turnos_medicos.dtos.responses.SpecialtyResponseDTO;
 import com.manuelfoulkes.turnos_medicos.entities.Specialty;
+import com.manuelfoulkes.turnos_medicos.exceptions.custom.ResourceAlreadyExistsException;
 import com.manuelfoulkes.turnos_medicos.exceptions.custom.ResourceNotFoundException;
+import com.manuelfoulkes.turnos_medicos.mappers.SpecialtyMapper;
 import com.manuelfoulkes.turnos_medicos.repositories.SpecialtyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import java.util.List;
 public class SpecialtyService {
 
     private final SpecialtyRepository specialtyRepository;
+    private final SpecialtyMapper specialtyMapper;
 
     // TODO: Refactor: Usar DTOs en todos los métodos
 
@@ -23,7 +26,7 @@ public class SpecialtyService {
         Specialty specialty = specialtyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Especialidad no encontrada"));
 
-        return new SpecialtyResponseDTO(specialty.getId(), specialty.getName());
+        return specialtyMapper.toResponseDTO(specialty);
     }
 
     public List<SpecialtyResponseDTO> getAllSpecialties() {
@@ -31,18 +34,21 @@ public class SpecialtyService {
         List<SpecialtyResponseDTO> specialtiesResponse = new ArrayList<>();
 
         for(Specialty specialty : specialties) {
-            SpecialtyResponseDTO specialtyResponse = new SpecialtyResponseDTO(specialty.getId(), specialty.getName());
-            specialtiesResponse.add(specialtyResponse);
+            specialtiesResponse.add(specialtyMapper.toResponseDTO(specialty));
         }
+
         return specialtiesResponse;
     }
 
     public SpecialtyResponseDTO createSpecialty(SpecialtyRequestDTO specialtyRequest) {
-        Specialty specialty = new Specialty();
-        specialty.setName(specialtyRequest.name());
+        if(specialtyRepository.findByName(specialtyRequest.name()).isPresent()) {
+            throw new ResourceAlreadyExistsException("La especialidad ya existe");
+        }
 
+        Specialty specialty = specialtyMapper.toEntity(specialtyRequest);
         Specialty newSpecialty = specialtyRepository.save(specialty);
-        return new SpecialtyResponseDTO(newSpecialty.getId(), newSpecialty.getName());
+
+        return specialtyMapper.toResponseDTO(newSpecialty);
     }
 
     public SpecialtyResponseDTO updateSpecialty(Long id, SpecialtyRequestDTO specialtyRequest) {

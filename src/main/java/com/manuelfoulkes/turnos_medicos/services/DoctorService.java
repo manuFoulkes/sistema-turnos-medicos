@@ -1,12 +1,12 @@
 package com.manuelfoulkes.turnos_medicos.services;
 
 import com.manuelfoulkes.turnos_medicos.dtos.requests.DoctorRequestDTO;
-import com.manuelfoulkes.turnos_medicos.dtos.responses.SpecialtyResponseDTO;
 import com.manuelfoulkes.turnos_medicos.dtos.responses.DoctorResponseDTO;
 import com.manuelfoulkes.turnos_medicos.entities.Doctor;
 import com.manuelfoulkes.turnos_medicos.entities.Specialty;
 import com.manuelfoulkes.turnos_medicos.exceptions.custom.ResourceAlreadyExistsException;
 import com.manuelfoulkes.turnos_medicos.exceptions.custom.ResourceNotFoundException;
+import com.manuelfoulkes.turnos_medicos.mappers.DoctorMapper;
 import com.manuelfoulkes.turnos_medicos.repositories.SpecialtyRepository;
 import com.manuelfoulkes.turnos_medicos.repositories.DoctorRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,32 +14,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-// TODO: Implementar mappers. Revisar validaciones
+
 @Service
 @RequiredArgsConstructor
 public class DoctorService {
 
     private final DoctorRepository doctorRepository;
     private final SpecialtyRepository specialtyRepository;
+    private final DoctorMapper doctorMapper;
 
     public DoctorResponseDTO getDoctorById(Long id) {
         Doctor doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Médico no encontrado"));
 
-        Specialty specialty = doctor.getSpecialty();
-
-        SpecialtyResponseDTO specialtyResponseDTO = new SpecialtyResponseDTO(
-                specialty.getId(),
-                specialty.getName()
-        );
-
-        return new DoctorResponseDTO(
-                doctor.getId(),
-                doctor.getName(),
-                doctor.getLastName(),
-                doctor.getLicenseNumber(),
-                specialtyResponseDTO
-        );
+        return doctorMapper.toResponseDTO(doctor);
     }
 
     public List<DoctorResponseDTO> getAllDoctors() {
@@ -48,22 +36,7 @@ public class DoctorService {
         List<DoctorResponseDTO> doctorsResponse = new ArrayList<>();
 
         for (Doctor doctor : doctors) {
-            Specialty specialty = doctor.getSpecialty();
-
-            SpecialtyResponseDTO especialidadResponse = new SpecialtyResponseDTO(
-                    specialty.getId(),
-                    specialty.getName()
-            );
-
-            DoctorResponseDTO doctorResponse = new DoctorResponseDTO(
-                    doctor.getId(),
-                    doctor.getName(),
-                    doctor.getLastName(),
-                    doctor.getLicenseNumber(),
-                    especialidadResponse
-            );
-
-            doctorsResponse.add(doctorResponse);
+            doctorsResponse.add(doctorMapper.toResponseDTO(doctor));
         }
 
         return doctorsResponse;
@@ -81,29 +54,15 @@ public class DoctorService {
         Specialty specialty = specialtyRepository.findById(specialtyId)
                 .orElseThrow(() -> new ResourceNotFoundException("La especialidad no existe"));
 
-        SpecialtyResponseDTO specialtyResponseDTO = new SpecialtyResponseDTO(
-                specialty.getId(),
-                specialty.getName()
-        );
-
-        Doctor newDoctor = new Doctor();
-
-        newDoctor.setName(doctorRequestDTO.name());
-        newDoctor.setLastName(doctorRequestDTO.lastName());
-        newDoctor.setLicenseNumber(doctorRequestDTO.licenseNumber());
+        Doctor newDoctor = doctorMapper.toEntity(doctorRequestDTO);
         newDoctor.setSpecialty(specialty);
 
-        newDoctor = doctorRepository.save(newDoctor);
+        Doctor Doctor = doctorRepository.save(newDoctor);
 
-        return new DoctorResponseDTO(
-                newDoctor.getId(),
-                newDoctor.getName(),
-                newDoctor.getLastName(),
-                newDoctor.getLicenseNumber(),
-                specialtyResponseDTO
-        );
+        return doctorMapper.toResponseDTO(newDoctor);
     }
 
+    // Revisar donde va la implementación de mappers para request -> entity en todos los services
     public DoctorResponseDTO updateDoctor(Long id, DoctorRequestDTO doctorRequest) {
          Doctor doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Medico no encontrado"));
@@ -118,20 +77,9 @@ public class DoctorService {
         doctor.setLicenseNumber(doctorRequest.licenseNumber());
         doctor.setSpecialty(specialty);
 
-        Doctor newDoctor = doctorRepository.save(doctor);
+        Doctor updated = doctorRepository.save(doctor);
 
-        SpecialtyResponseDTO specialtyResponse = new SpecialtyResponseDTO(
-                specialty.getId(),
-                specialty.getName()
-        );
-
-        return new DoctorResponseDTO(
-                newDoctor.getId(),
-                newDoctor.getName(),
-                newDoctor.getLastName(),
-                newDoctor.getLicenseNumber(),
-                specialtyResponse
-        );
+        return doctorMapper.toResponseDTO(updated);
     }
 
     public void deleteDoctor(Long id) {

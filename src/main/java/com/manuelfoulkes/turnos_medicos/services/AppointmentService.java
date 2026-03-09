@@ -1,14 +1,15 @@
 package com.manuelfoulkes.turnos_medicos.services;
 
 import com.manuelfoulkes.turnos_medicos.dtos.requests.AppointmentRequestDTO;
-import com.manuelfoulkes.turnos_medicos.dtos.responses.SpecialtyResponseDTO;
-import com.manuelfoulkes.turnos_medicos.dtos.responses.DoctorResponseDTO;
-import com.manuelfoulkes.turnos_medicos.dtos.responses.PatientResponseDTO;
 import com.manuelfoulkes.turnos_medicos.dtos.responses.AppointmentResponseDTO;
 import com.manuelfoulkes.turnos_medicos.entities.*;
 import com.manuelfoulkes.turnos_medicos.exceptions.custom.InvalidOperationException;
 import com.manuelfoulkes.turnos_medicos.exceptions.custom.ResourceNotFoundException;
 import com.manuelfoulkes.turnos_medicos.exceptions.custom.UnauthorizedOperationException;
+import com.manuelfoulkes.turnos_medicos.mappers.AppointmentMapper;
+import com.manuelfoulkes.turnos_medicos.mappers.DoctorMapper;
+import com.manuelfoulkes.turnos_medicos.mappers.PatientMapper;
+import com.manuelfoulkes.turnos_medicos.mappers.SpecialtyMapper;
 import com.manuelfoulkes.turnos_medicos.repositories.DoctorRepository;
 import com.manuelfoulkes.turnos_medicos.repositories.PatientRepository;
 import com.manuelfoulkes.turnos_medicos.repositories.AppointmentRepository;
@@ -24,8 +25,10 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final PatientRepository patientRepository;
     private final DoctorRepository doctorRepository;
+    private final AppointmentMapper appointmentMapper;
 
-    // TODO: Implementar mappers y limpiar
+    // TODO: Chequear el uso de métodos helpers (no son necesarios)
+    // TODO: limpiar
     public AppointmentResponseDTO bookAppointment(AppointmentRequestDTO appointmentRequest) {
         Long patientId = appointmentRequest.patientId();
         Long doctorId = appointmentRequest.doctorId();
@@ -58,41 +61,10 @@ public class AppointmentService {
 
         newAppointment = appointmentRepository.save(newAppointment);
 
-        PatientResponseDTO patientResponse = new PatientResponseDTO(
-                patient.getId(),
-                patient.getName(),
-                patient.getLastName(),
-                patient.getNationalId(),
-                patient.getEmail(),
-                patient.getPhoneNumber()
-        );
-
-        Specialty specialty = doctor.getSpecialty();
-
-        SpecialtyResponseDTO specialtyResponse = new SpecialtyResponseDTO(
-                specialty.getId(),
-                specialty.getName()
-        );
-
-        DoctorResponseDTO doctorResponse =  new DoctorResponseDTO(
-                doctor.getId(),
-                doctor.getName(),
-                doctor.getLastName(),
-                doctor.getLicenseNumber(),
-                specialtyResponse
-        );
-
-        return new AppointmentResponseDTO(
-                newAppointment.getId(),
-                newAppointment.getDateTime(),
-                newAppointment.getStatus(),
-                patientResponse,
-                doctorResponse,
-                newAppointment.getDateTime()
-        );
+        return appointmentMapper.toResponseDTO(newAppointment);
     }
 
-    // TODO: Implementar mapppers y limpiar
+    // TODO: limpiar
     public AppointmentResponseDTO updateAppointment(Long patientId, Long appointmentId, AppointmentRequestDTO appointmentRequest) {
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new ResourceNotFoundException("El paciente no existe"));
@@ -136,41 +108,11 @@ public class AppointmentService {
         appointment.setDoctor(doctor);
 
         Appointment updatedAppointment = appointmentRepository.save(appointment);
-        Specialty specialty = doctor.getSpecialty();
 
-        PatientResponseDTO pacienteResponse = new PatientResponseDTO(
-                patient.getId(),
-                patient.getName(),
-                patient.getLastName(),
-                patient.getNationalId(),
-                patient.getEmail(),
-                patient.getPhoneNumber()
-        );
-
-        SpecialtyResponseDTO especialidadResponse = new SpecialtyResponseDTO(
-                specialty.getId(),
-                specialty.getName()
-        );
-
-        DoctorResponseDTO medicoResponse = new DoctorResponseDTO(
-                doctor.getId(),
-                doctor.getName(),
-                doctor.getLastName(),
-                doctor.getLicenseNumber(),
-                especialidadResponse
-        );
-
-        return new AppointmentResponseDTO(
-                updatedAppointment.getId(),
-                updatedAppointment.getDateTime(),
-                updatedAppointment.getStatus(),
-                pacienteResponse,
-                medicoResponse,
-                updatedAppointment.getCreationDate()
-        );
+        return appointmentMapper.toResponseDTO(updatedAppointment);
     }
 
-    // TODO: Implementar mappers y limpiar
+    // TODO: limpiar
     public AppointmentResponseDTO completeAppointment(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("El turno no existe"));
@@ -192,47 +134,13 @@ public class AppointmentService {
         }
 
         appointment.setStatus(AppointmentStatus.COMPLETED);
+
         Appointment appointmentCompleted = appointmentRepository.save(appointment);
 
-        Patient patient = appointment.getPatient();
-
-        PatientResponseDTO patientResponse = new PatientResponseDTO(
-                patient.getId(),
-                patient.getName(),
-                patient.getLastName(),
-                patient.getNationalId(),
-                patient.getEmail(),
-                patient.getPhoneNumber()
-        );
-
-        Doctor doctor = appointmentCompleted.getDoctor();
-
-        Specialty specialty = doctor.getSpecialty();
-
-        SpecialtyResponseDTO especialidadResponse = new SpecialtyResponseDTO(
-                specialty.getId(),
-                specialty.getName()
-        );
-
-        DoctorResponseDTO doctorResponse = new DoctorResponseDTO(
-                doctor.getId(),
-                doctor.getName(),
-                doctor.getLastName(),
-                doctor.getLicenseNumber(),
-                especialidadResponse
-        );
-
-        return new AppointmentResponseDTO(
-                appointmentCompleted.getId(),
-                appointmentCompleted.getDateTime(),
-                appointmentCompleted.getStatus(),
-                patientResponse,
-                doctorResponse,
-                appointmentCompleted.getCreationDate()
-        );
+        return appointmentMapper.toResponseDTO(appointmentCompleted);
     }
 
-    // TODO: Implementar mappers y limpiar
+    // TODO: limpiar
     public AppointmentResponseDTO cancelAppointment(Long patientId, Long appointmentId) {
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Paciente no encontrado"));
@@ -263,40 +171,7 @@ public class AppointmentService {
 
         Appointment cancelledAppointment = appointmentRepository.save(appointment);
 
-        PatientResponseDTO pacienteResponse = new PatientResponseDTO(
-                patient.getId(),
-                patient.getName(),
-                patient.getLastName(),
-                patient.getNationalId(),
-                patient.getEmail(),
-                patient.getPhoneNumber()
-        );
-
-        Doctor doctor = cancelledAppointment.getDoctor();
-
-        Specialty specialty =  doctor.getSpecialty();
-
-        SpecialtyResponseDTO specialtyResponse = new SpecialtyResponseDTO(
-                specialty.getId(),
-                specialty.getName()
-        );
-
-        DoctorResponseDTO doctorResponse = new DoctorResponseDTO(
-                doctor.getId(),
-                doctor.getName(),
-                doctor.getLastName(),
-                doctor.getLicenseNumber(),
-                specialtyResponse
-        );
-
-        return new AppointmentResponseDTO(
-                cancelledAppointment.getId(),
-                cancelledAppointment.getDateTime(),
-                cancelledAppointment.getStatus(),
-                pacienteResponse,
-                doctorResponse,
-                cancelledAppointment.getDateTime()
-        );
+        return appointmentMapper.toResponseDTO(cancelledAppointment);
     }
 
     private boolean appointmentIsBooking(Long doctorId, LocalDateTime dateTime, AppointmentStatus appointmentStatus) {

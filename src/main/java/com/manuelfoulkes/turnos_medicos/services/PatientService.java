@@ -5,6 +5,7 @@ import com.manuelfoulkes.turnos_medicos.dtos.responses.PatientResponseDTO;
 import com.manuelfoulkes.turnos_medicos.entities.Patient;
 import com.manuelfoulkes.turnos_medicos.exceptions.custom.ResourceAlreadyExistsException;
 import com.manuelfoulkes.turnos_medicos.exceptions.custom.ResourceNotFoundException;
+import com.manuelfoulkes.turnos_medicos.mappers.PatientMapper;
 import com.manuelfoulkes.turnos_medicos.repositories.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,19 +18,13 @@ import java.util.List;
 public class PatientService {
 
     private final PatientRepository patientRepository;
+    private final PatientMapper patientMapper;
 
     public PatientResponseDTO getById(Long id) {
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Paciente no encontrado"));
 
-        return new PatientResponseDTO(
-                patient.getId(),
-                patient.getName(),
-                patient.getLastName(),
-                patient.getNationalId(),
-                patient.getEmail(),
-                patient.getPhoneNumber()
-        );
+        return patientMapper.toResponseDTO(patient);
     }
 
     public List<PatientResponseDTO> getAllPatients() {
@@ -37,17 +32,8 @@ public class PatientService {
 
         List<PatientResponseDTO> pacientesResponse = new ArrayList<>();
 
-        for (Patient p : patients) {
-            PatientResponseDTO pacienteResponse = new PatientResponseDTO(
-                    p.getId(),
-                    p.getName(),
-                    p.getLastName(),
-                    p.getNationalId(),
-                    p.getEmail(),
-                    p.getPhoneNumber()
-            );
-
-            pacientesResponse.add(pacienteResponse);
+        for (Patient patient : patients) {
+            pacientesResponse.add(patientMapper.toResponseDTO(patient));
         }
 
         return pacientesResponse;
@@ -60,24 +46,11 @@ public class PatientService {
             throw new ResourceAlreadyExistsException("El paciente ya está registrado");
         }
 
-        Patient newPatient = new Patient();
+        Patient patient = patientMapper.toEntity(patientRequest);
 
-        newPatient.setName(patientRequest.name());
-        newPatient.setLastName(patientRequest.lastName());
-        newPatient.setNationalId(patientRequest.nationalId());
-        newPatient.setEmail(patientRequest.email());
-        newPatient.setPhoneNumber(patientRequest.phoneNumber());
+        Patient newPatient = patientRepository.save(patient);
 
-        newPatient = patientRepository.save(newPatient);
-
-        return new PatientResponseDTO(
-                newPatient.getId(),
-                newPatient.getName(),
-                newPatient.getLastName(),
-                newPatient.getNationalId(),
-                newPatient.getEmail(),
-                newPatient.getPhoneNumber()
-        );
+        return patientMapper.toResponseDTO(newPatient);
     }
 
     public PatientResponseDTO updatePatient(Long id, PatientRequestDTO patientRequest) {
@@ -92,14 +65,7 @@ public class PatientService {
 
         Patient newPatient = patientRepository.save(patient);
 
-        return new PatientResponseDTO(
-                newPatient.getId(),
-                newPatient.getName(),
-                newPatient.getLastName(),
-                newPatient.getNationalId(),
-                newPatient.getEmail(),
-                newPatient.getPhoneNumber()
-        );
+        return patientMapper.toResponseDTO(newPatient);
     }
 
     public void deletePatient(Long id) {
