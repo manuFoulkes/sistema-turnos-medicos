@@ -57,7 +57,7 @@ public class DoctorService {
         Doctor newDoctor = doctorMapper.toEntity(doctorRequestDTO);
         newDoctor.setSpecialty(specialty);
 
-        Doctor Doctor = doctorRepository.save(newDoctor);
+        Doctor doctor = doctorRepository.save(newDoctor);
 
         return doctorMapper.toResponseDTO(newDoctor);
     }

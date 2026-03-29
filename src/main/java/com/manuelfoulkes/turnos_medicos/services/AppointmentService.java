@@ -7,9 +7,6 @@ import com.manuelfoulkes.turnos_medicos.exceptions.custom.InvalidOperationExcept
 import com.manuelfoulkes.turnos_medicos.exceptions.custom.ResourceNotFoundException;
 import com.manuelfoulkes.turnos_medicos.exceptions.custom.UnauthorizedOperationException;
 import com.manuelfoulkes.turnos_medicos.mappers.AppointmentMapper;
-import com.manuelfoulkes.turnos_medicos.mappers.DoctorMapper;
-import com.manuelfoulkes.turnos_medicos.mappers.PatientMapper;
-import com.manuelfoulkes.turnos_medicos.mappers.SpecialtyMapper;
 import com.manuelfoulkes.turnos_medicos.repositories.DoctorRepository;
 import com.manuelfoulkes.turnos_medicos.repositories.PatientRepository;
 import com.manuelfoulkes.turnos_medicos.repositories.AppointmentRepository;
@@ -65,7 +62,11 @@ public class AppointmentService {
     }
 
     // TODO: limpiar
-    public AppointmentResponseDTO updateAppointment(Long patientId, Long appointmentId, AppointmentRequestDTO appointmentRequest) {
+    public AppointmentResponseDTO updateAppointment(
+            Long patientId,
+            Long appointmentId,
+            AppointmentRequestDTO appointmentRequest
+    ) {
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new ResourceNotFoundException("El paciente no existe"));
 

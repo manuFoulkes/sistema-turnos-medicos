@@ -59,10 +59,13 @@ public class SpecialtyService {
 
         Specialty updatedSpecialty = specialtyRepository.save(specialty);
 
-        return new SpecialtyResponseDTO(updatedSpecialty.getId(), updatedSpecialty.getName());
+        return specialtyMapper.toResponseDTO(updatedSpecialty);
     }
 
     public void deleteSpecialty(Long id) {
-        specialtyRepository.deleteById(id);
+        Specialty specialty = specialtyRepository.findById(id)
+                        .orElseThrow(() ->  new ResourceNotFoundException("Especialidad no encontrada"));
+
+        specialtyRepository.delete(specialty);
     }
 }

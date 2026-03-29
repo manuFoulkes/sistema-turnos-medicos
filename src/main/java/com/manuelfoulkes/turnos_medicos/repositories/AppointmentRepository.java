@@ -8,9 +8,14 @@ import java.time.LocalDateTime;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 
-    boolean existsByDoctorIdAndDateTimeAndStatusNot(Long medicoId, LocalDateTime fechaHora, AppointmentStatus estado);
+    boolean existsByDoctorIdAndDateTimeAndStatusNot(Long doctorId, LocalDateTime dateTime, AppointmentStatus status);
 
-    int countByPatientIdAndStatusAndDateTimeAfter(Long pacienteId, AppointmentStatus estado, LocalDateTime fechaHora);
+    int countByPatientIdAndStatusAndDateTimeAfter(Long patientId, AppointmentStatus status, LocalDateTime dateTime);
 
-    boolean existsByDoctorIdAndDateTimeAndStatusNotAndIdNot(Long medicoId, LocalDateTime fechaHora, AppointmentStatus estado, Long turnoId);
+    boolean existsByDoctorIdAndDateTimeAndStatusNotAndIdNot(
+            Long doctorId,
+            LocalDateTime dateTime,
+            AppointmentStatus status,
+            Long appointmentId
+    );
 }
