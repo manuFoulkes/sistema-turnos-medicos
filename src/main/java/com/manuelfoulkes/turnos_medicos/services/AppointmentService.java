@@ -52,7 +52,7 @@ public class AppointmentService {
         }
 
         Appointment newAppointment =  new Appointment();
-        newAppointment.setDateTime(appointmentRequest.dateTime());
+        newAppointment.setScheduleDateTime(appointmentRequest.dateTime());
         newAppointment.setPatient(patient);
         newAppointment.setDoctor(doctor);
 
@@ -86,7 +86,7 @@ public class AppointmentService {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime limitHour = appointment.getDateTime().minusHours(48);
+        LocalDateTime limitHour = appointment.getScheduleDateTime().minusHours(48);
 
         if(now.isAfter(limitHour)) {
             throw new InvalidOperationException("No se puede modificar un turno con menos de 48 hs de anticipación");
@@ -105,7 +105,7 @@ public class AppointmentService {
             throw new InvalidOperationException("La fecha debe ser futura");
         }
 
-        appointment.setDateTime(appointmentRequest.dateTime());
+        appointment.setScheduleDateTime(appointmentRequest.dateTime());
         appointment.setDoctor(doctor);
 
         Appointment updatedAppointment = appointmentRepository.save(appointment);
@@ -123,8 +123,8 @@ public class AppointmentService {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime windowStart = appointment.getDateTime().minusMinutes(30);
-        LocalDateTime windowEnd = appointment.getDateTime().plusMinutes(10);
+        LocalDateTime windowStart = appointment.getScheduleDateTime().minusMinutes(30);
+        LocalDateTime windowEnd = appointment.getScheduleDateTime().plusMinutes(10);
 
         if(now.isBefore(windowStart)) {
             throw new InvalidOperationException("El turno no se puede completar todavía");
@@ -162,7 +162,7 @@ public class AppointmentService {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime limitHour = appointment.getDateTime().minusHours(48);
+        LocalDateTime limitHour = appointment.getScheduleDateTime().minusHours(48);
 
         if(now.isAfter(limitHour)) {
             throw new InvalidOperationException("No se puede cancelar un turno con menos de 48 hs de anticipación");

@@ -18,7 +18,7 @@ public class Appointment {
     private Long id;
 
     @Column(name = "date_time", nullable = false)
-    private LocalDateTime dateTime;
+    private LocalDateTime scheduleDateTime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")

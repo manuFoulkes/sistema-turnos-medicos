@@ -92,7 +92,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok-mapstruct-binding</artifactId>
-			<version>0.2.0</version>  <!-- Esta está bien, no cambió -->
+			<version>0.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mapstruct</groupId>
