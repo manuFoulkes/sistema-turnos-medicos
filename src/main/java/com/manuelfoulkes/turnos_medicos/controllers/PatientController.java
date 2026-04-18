@@ -21,7 +21,7 @@ import java.util.List;
 
 @Tag(name = "Patients", description = "Endpoints to manage patients information")
 @RestController
-@RequestMapping("/api/patients")
+@RequestMapping("/api/v1/patients")
 @RequiredArgsConstructor
 public class PatientController {
 
